@@ -67,9 +67,9 @@ modtector provides a complete workflow from raw data to evaluation results:
 
 ## Version Information
 
-- **Current Version**: v0.9.5
+- **Current Version**: v0.9.6
 - **Release Date**: 2025-09-27
-- **License**: [Add license information]
+- **License**: MIT License
 
 ## Support
 
