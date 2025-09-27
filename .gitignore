@@ -16,7 +16,7 @@ PUBLISH_CHECKLIST.md
 # Result files and output directories
 *.csv
 *.png
-*.txt
+#*.txt
 *.tsv
 *.bed
 *.gtf
