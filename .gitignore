@@ -79,7 +79,7 @@ desktop.ini
 *.sh
 *.bash
 #*.yaml
-*.yml
+#*.yml
 *.json
 *.toml.orig
 Snakefile
