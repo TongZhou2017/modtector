@@ -167,7 +167,7 @@ master_doc = 'index'
 # -- Options for intersphinx extension ---------------------------------------
 
 # Example configuration for intersphinx: refer to the Python standard library.
-intersphinx_mapping = {'https://docs.python.org/': None}
+intersphinx_mapping = {'python': ('https://docs.python.org/3/', None)}
 
 # -- Options for todo extension ----------------------------------------------
 
@@ -227,4 +227,4 @@ coverage_show_missing_items = True
 
 # If true, the viewcode extension will generate a source code view for
 # all modules.
-viewcode_import = True
+# viewcode_import = True  # This option is deprecated in newer Sphinx versions
