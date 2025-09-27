@@ -1,0 +1,138 @@
+# Rust build artifacts
+/target/
+Cargo.lock
+
+# Directories not needed for crates.io publishing
+/benchmark/
+/example/
+/note/
+/runs/
+/tests/
+
+# Files not needed for crates.io publishing
+CHAT.md
+PUBLISH_CHECKLIST.md
+
+# Result files and output directories
+*.csv
+*.png
+*.txt
+*.tsv
+*.bed
+*.gtf
+*.gff3
+*.dp
+*.svg
+
+# Temporary files
+*.tmp
+*.temp
+*~
+*.bak
+*.orig
+*.rej
+
+# System files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+desktop.ini
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.emacs.d/
+.vim/
+.vimrc
+
+# Log files
+*.log
+*.out
+*.err
+
+# Large data files
+*.bam
+*.bai
+*.sam
+*.fa
+*.fasta
+*.fq
+*.fastq
+*.gz
+*.bz2
+*.xz
+*.zip
+*.tar
+*.tar.gz
+*.7z
+
+# Scripts and configuration files
+*.py
+*.R
+*.sh
+*.bash
+#*.yaml
+*.yml
+*.json
+*.toml.orig
+Snakefile
+Makefile
+*.env
+*.env.local
+
+# Documentation build files
+docs/_build/
+docs/doctrees/
+docs/html/
+docs/latex/
+
+# Snakemake metadata
+**/.snakemake/
+**/.snakemake_cache/
+**/.snakemake_metadata/
+
+# Test and debug files
+test_*.sh
+debug_*.sh
+*.test
+*.spec
+coverage/
+*.coverage
+.coverage
+.pytest_cache/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Package management files
+node_modules/
+.npm/
+.yarn/
+
+# Reference project paths (not included in version control)
+/old/
+/stone/
+/icSHAPE-pipe-master/
+
+# Backup files
+*.backup
+*.old
+*.orig
+
+# Lock files (ignore all except Cargo.lock)
+package-lock.json
+yarn.lock
+Pipfile.lock
+
+# Local configuration files
+.local/
+local/
+*.local
