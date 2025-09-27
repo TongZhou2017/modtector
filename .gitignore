@@ -74,7 +74,7 @@ desktop.ini
 *.7z
 
 # Scripts and configuration files
-*.py
+#*.py
 *.R
 *.sh
 *.bash
