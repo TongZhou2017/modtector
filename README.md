@@ -1,4 +1,4 @@
-# ModTector
+<img src="docs/modtector_logo.gif" width="360" alt="modtector package logo and demonstration"/>
 
 ModTector is a high-performance RNA modification detection tool developed in Rust, supporting multi-signal analysis, data normalization, reactivity calculation, and accuracy assessment. Based on pileup analysis, it can detect RNA modification sites from BAM-format sequencing data and generate rich visualization results.
 
