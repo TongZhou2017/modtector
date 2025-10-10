@@ -15,7 +15,7 @@ PUBLISH_CHECKLIST.md
 
 # Result files and output directories
 *.csv
-*.png
+#*.png
 #*.txt
 *.tsv
 *.bed
@@ -135,4 +135,5 @@ Pipfile.lock
 # Local configuration files
 .local/
 local/
-*.local
+*.localruns/
+runs_backup/
