@@ -40,6 +40,8 @@ Welcome to the modtector documentation! This is your starting point for learning
 
 modtector provides a complete workflow from raw data to evaluation results:
 
+![Workflow Diagram](images/workflow.png)
+
 1. **Data Input**: BAM files (modified/unmodified samples), FASTA reference sequences, secondary structure files
 2. **Statistical Analysis**: Pileup traversal, counting stop and mutation signals
 3. **Data Normalization**: Signal filtering, outlier handling, background correction
@@ -53,6 +55,33 @@ modtector provides a complete workflow from raw data to evaluation results:
 - **Current Version**: v0.9.6
 - **Release Date**: 2025-09-27
 - **License**: MIT License
+
+## Example Dataset
+
+To help you quickly evaluate modtector, we provide a minimal example dataset available at [Zenodo (10.5281/zenodo.17316476)](https://doi.org/10.5281/zenodo.17316476). This dataset contains a small subset of data that can be processed quickly to demonstrate modtector's functionality.
+
+### Quick Start with Example Data
+
+1. Download and extract the example dataset:
+   ```bash
+   wget https://zenodo.org/record/17316476/files/modtector_example_dataset.zip
+   unzip modtector_example_dataset.zip
+   cd modtector_example_dataset
+   ```
+
+2. Run the example script:
+   ```bash
+   bash test_modtector_v0.9.6.sh
+   ```
+
+This will execute a complete workflow on the example data, including:
+- Pileup processing of BAM files
+- Reactivity calculation with multiple methods
+- Data normalization
+- Visualization generation
+- Accuracy evaluation
+
+The results will be organized in the `signal_v0.5.6/` directory with subdirectories for each processing step.
 
 ## Support
 
