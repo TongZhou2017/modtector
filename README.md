@@ -622,11 +622,71 @@ For questions or suggestions, please contact us through GitHub Issues.
 
 ## Version Information
 
-- **Current Version**: v0.14.0
-- **Release Date**: 2025-01-XX
+- **Current Version**: v0.15.4
+- **Release Date**: 2026-02-08
 - **License**: MIT
 
-### v0.14.0 New Features
+### v0.15.4 Bug Fixes (2026-02-08)
+
+- **Base Mismatch in SVG Metadata Extraction**: Fixed critical bug where SVG circle attributes were being matched from adjacent circles
+  - Replaced context window method with individual circle tag parsing
+  - Eliminates "Base mismatch" errors in HTML metadata verification
+  - Ensures `RNA_METADATA` matches circle `data-base` attributes correctly
+- **Base Type Extraction from SVG Template**: Fixed base type extraction to use reliable template position mapping
+  - Uses `position.label in template: POS.BASE` format for accurate base mapping
+  - Ensures `data-base` attribute uses SVG template's actual base type
+
+### v0.14.10 Changes (2026-02-03)
+
+- **Zarringhalam Remap Negative Value Handling**: Integrated "align min to 0" logic into `zarringhalam_remap` internal implementation
+  - Preserves mod/unmod relative differences regardless of normalization workflow
+  - Handles negative values correctly in Zarringhalam piecewise linear mapping
+
+### v0.14.9 Bug Fixes (2026-02-01)
+
+- **Interactive SVG Right-Click Menu**: Fixed style changes not taking effect
+- **Text Element Location**: Enhanced text element finding with multiple fallback methods
+- **State Saving**: Fixed null reference errors in state saving function
+- **Legend Position**: Changed to bottom-right to avoid obscuring RNA structure
+- **Page Loading**: Improved loading experience with better loading message
+- **Minimap**: Enabled viewport dragging and improved auto-hide behavior
+- **Version Display**: Automatically uses version from `Cargo.toml`
+
+### v0.14.8 New Features (2026-01-30)
+
+- **Bedgraph Format Support**: Native Rust implementation for bedgraph file format conversion
+  - New `--format bedgraph` option for `modtector convert` command
+  - Correctly calculates RT stop count from adjacent position differences
+  - Replaces Python script-based conversion for better performance
+
+### v0.14.7 New Features (2026-01-30)
+
+- **Native icSHAPE RT Format Support**: Implemented icSHAPE-pipe RT file format conversion directly in Rust
+  - New `--format icSHAPE-rt` option for `modtector convert` command
+  - New `--filter-strand` parameter for strand filtering
+  - Automatic format detection and robust error handling
+
+### v0.14.6 New Features (2026-01-30)
+
+- **icSHAPE RT Format Support**: Extended `convert` command to support icSHAPE-pipe RT file format conversion
+  - Support for converting icSHAPE-pipe RT files to modtector pileup CSV format
+  - Configurable strand filtering via `filter_strand` parameter
+
+### v0.14.5 New Features (2026-01-30)
+
+- **Dual Input Mode for `modtector convert`**: Support simultaneous input of mutation and stop signal files
+  - New `--input-mutation` and `--input-stop` parameters
+  - Merges both files into a single pileup output with both mutation and stop counts
+
+### v0.14.4 New Features (2025-12-20)
+
+- **Quality-Based Effective Depth Calculation**: Enhanced depth filtering based on base quality scores
+  - New `effective_depth` field in output CSV files when `--min-base-qual` is enabled
+  - Quality filtering improves mutation rate calculation accuracy
+- **PCR Bias Correction Method**: Chi-Square distribution-based PCR amplification bias correction
+  - Available in `modtector correct` command (optional feature)
+
+### v0.14.0 New Features (2025-12-15)
 
 - **Base Quality Filtering**: Added per-base quality filtering for mutation detection in `modtector count` command
   - New `--min-base-qual` parameter (default: 0, recommended: 20)
@@ -635,38 +695,66 @@ For questions or suggestions, please contact us through GitHub Issues.
   - Minimal performance overhead (<1%)
   - Integrated into Snakefile workflow
 
-### v0.12.1 Bug Fixes
+### v0.13.0 New Features (2025-11-20)
+
+- **Distribution-Based K-Factor Prediction**: New advanced k-factor prediction method using statistical distribution analysis
+  - New `--k-prediction-method` parameter with options: `background` (default) and `distribution`
+  - Significantly improves k prediction accuracy, especially for 2A3 samples
+  - Average k difference reduced from 0.1758 to 0.1175
+
+### v0.12.5 Bug Fixes (2025-11-15)
+
+- **Critical Normalization Bug Fix**: Fixed `zarringhalam_remap` function to properly handle negative input values
+  - Now correctly maps all negative values to 0 before applying piecewise linear mapping
+  - Ensures all output values are in [0, 1] range
+
+### v0.12.4 Bug Fixes (2025-11-10)
+
+- **Critical Evaluation Bug Fix**: Fixed incorrect sensitivity and specificity calculation
+  - Now uses optimal threshold (threshold with highest F1-score) to calculate all metrics
+  - Fixes evaluation metrics for non-`_sf` methods
+
+### v0.12.3 New Features (2025-11-05)
+
+- **Input Format Extension**: Significantly expanded `modtector convert` command's input format support
+  - RNA Framework formats: `rf-rctools`, `rf-norm`, `rf-norm-xml`
+  - ShapeMapper2 format: `shapemapper-profile`
+  - Samtools format: `samtools-mpileup`
+  - Multi-level format auto-detection and streaming processing
+
+### v0.12.2 Changes (2025-10-30)
+
+- **Critical Accuracy Improvement**: Modified Siegfried method to allow negative reactivity values
+  - Removed `.max(0.0)` operation that was forcing all negative values to zero
+  - Matches Shapemapper's implementation: `R_i = T_i - U_i` (allowing negatives)
+  - Expected AUC improvement of ~17.8%
+
+### v0.12.1 Bug Fixes (2025-10-25)
 
 - **Critical Fix**: Fixed NaN value handling in evaluate command
   - Fixed panic when processing reactivity files containing NaN values
   - Properly handles NaN values in sorting and statistical calculations
-  - Fixes evaluate_bamreadcount rule failure in Snakefile workflow
 
-### v0.12.0 New Features
+### v0.12.0 New Features (2025-10-20)
 
 - **Bamreadcount Convert Command**: Native Rust implementation for converting bamreadcount format to modtector pileup CSV format
   - New `convert` command: `modtector convert -i input.txt -o output.csv -s +`
   - Replaces Python script with high-performance Rust module
   - Streaming processing supports large files (tested up to 35GB)
-  - Integrated into modtector toolchain for consistency
 - **Bamreadcount Reactivity Support**: Added workflow support for reactivity calculation using bamreadcount-derived pileup files
-  - New `reactivity_bamreadcount` rule in Snakefile
-  - Maintains compatibility with existing modtector pileup workflow
 
-### v0.11.1 Bug Fixes
+### v0.11.1 Bug Fixes (2025-08-15)
 
 - **Critical Fix**: Corrected stop signal position correction for reverse-strand reads
   - Forward strand: `start_position - 1` (upstream correction)
   - Reverse strand: `start_position + 1` (downstream correction)
   - Ensures accurate genomic position assignment according to theoretical principles
-- **Documentation**: Updated signal correction documentation to reflect strand-specific correction formulas
 
-### v0.11.0 New Features
+### v0.11.0 New Features (2025-08-10)
 
 - **Batch Processing Mode**: Process multiple BAM files sequentially with glob pattern matching
 - **Single-cell Unified Processing**: Unified processing strategy for single-cell data with automatic cell label extraction
 - **Performance Optimization**: 2-3x speedup for single-cell data processing
-- **Data Distribution Scanning**: Optimized unified scanning reduces processing time significantly
 
 ## Citation
 
