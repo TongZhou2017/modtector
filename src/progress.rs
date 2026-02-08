@@ -18,13 +18,13 @@ impl ProgressBar {
             last_percentage: 0,
         }
     }
-    
+
     /// Set progress bar width
     pub fn with_width(mut self, width: usize) -> Self {
         self.width = width;
         self
     }
-    
+
     /// Update progress
     pub fn update(&mut self, current: usize) -> io::Result<()> {
         self.current = current;
@@ -33,16 +33,16 @@ impl ProgressBar {
         } else {
             0
         };
-        
+
         // Only update display when percentage changes
         if percentage != self.last_percentage {
             self.display()?;
             self.last_percentage = percentage;
         }
-        
+
         Ok(())
     }
-    
+
     /// Display progress bar
     fn display(&self) -> io::Result<()> {
         let percentage = if self.total > 0 {
@@ -50,27 +50,29 @@ impl ProgressBar {
         } else {
             0
         };
-        
+
         let filled_width = if self.total > 0 {
             (self.current * self.width) / self.total
         } else {
             0
         };
-        
+
         let bar = "█".repeat(filled_width);
         let empty = "░".repeat(self.width - filled_width);
-        
+
         // Clear current line and display progress bar
-        print!("\r[{}] {}% ({}/{})", 
-               bar + &empty, 
-               percentage, 
-               self.current, 
-               self.total);
+        print!(
+            "\r[{}] {}% ({}/{})",
+            bar + &empty,
+            percentage,
+            self.current,
+            self.total
+        );
         io::stdout().flush()?;
-        
+
         Ok(())
     }
-    
+
     /// Finish progress bar
     pub fn finish(&mut self) -> io::Result<()> {
         self.current = self.total;
@@ -78,7 +80,7 @@ impl ProgressBar {
         println!(); // New line
         Ok(())
     }
-    
+
     /// Display progress bar with description
     pub fn with_description(mut self, description: &str) -> io::Result<()> {
         let percentage = if self.total > 0 {
@@ -86,25 +88,27 @@ impl ProgressBar {
         } else {
             0
         };
-        
+
         let filled_width = if self.total > 0 {
             (self.current * self.width) / self.total
         } else {
             0
         };
-        
+
         let bar = "█".repeat(filled_width);
         let empty = "░".repeat(self.width - filled_width);
-        
+
         // Clear current line and display progress bar with description
-        print!("\r{} [{}] {}% ({}/{})", 
-               description,
-               bar + &empty, 
-               percentage, 
-               self.current, 
-               self.total);
+        print!(
+            "\r{} [{}] {}% ({}/{})",
+            description,
+            bar + &empty,
+            percentage,
+            self.current,
+            self.total
+        );
         io::stdout().flush()?;
-        
+
         Ok(())
     }
 }
@@ -125,7 +129,7 @@ impl SimpleProgress {
             last_percentage: 0,
         }
     }
-    
+
     /// Update progress (refresh on each call to avoid staying at fixed count for long time)
     pub fn update(&mut self, current: usize) -> io::Result<()> {
         self.current = current;
@@ -135,16 +139,16 @@ impl SimpleProgress {
             0
         };
 
-        print!("\r[Progressing] {}/{} ({}%)", 
-               self.current, 
-               self.total, 
-               percentage);
+        print!(
+            "\r[Progressing] {}/{} ({}%)",
+            self.current, self.total, percentage
+        );
         io::stdout().flush()?;
         self.last_percentage = percentage;
-        
+
         Ok(())
     }
-    
+
     /// Finish progress display
     pub fn finish(&mut self) -> io::Result<()> {
         self.current = self.total;
@@ -172,7 +176,7 @@ impl DescriptiveProgress {
             last_percentage: 0,
         }
     }
-    
+
     /// Update progress
     pub fn update(&mut self, current: usize) -> io::Result<()> {
         self.current = current;
@@ -181,32 +185,31 @@ impl DescriptiveProgress {
         } else {
             0
         };
-        
+
         // Only update display when percentage changes
         if percentage != self.last_percentage {
-            print!("\r{}: {}/{} ({}%)", 
-                   self.description,
-                   self.current, 
-                   self.total, 
-                   percentage);
+            print!(
+                "\r{}: {}/{} ({}%)",
+                self.description, self.current, self.total, percentage
+            );
             io::stdout().flush()?;
             self.last_percentage = percentage;
         }
-        
+
         Ok(())
     }
-    
+
     /// Finish progress display
     pub fn finish(&mut self) -> io::Result<()> {
         self.current = self.total;
-        print!("\r{}: {}/{} (100%)", 
-               self.description,
-               self.total, 
-               self.total);
+        print!(
+            "\r{}: {}/{} (100%)",
+            self.description, self.total, self.total
+        );
         println!(); // New line
         Ok(())
     }
-} 
+}
 
 /// Format time as "xx h xx m xx.xxx s" format
 pub fn format_time_used(elapsed: std::time::Duration) -> String {
@@ -214,9 +217,12 @@ pub fn format_time_used(elapsed: std::time::Duration) -> String {
     let hours = (total_secs / 3600.0) as u64;
     let minutes = ((total_secs % 3600.0) / 60.0) as u64;
     let seconds = total_secs % 60.0;
-    
+
     if hours > 0 {
-        format!("[Time used] {:02} h {:02} m {:05.3} s", hours, minutes, seconds)
+        format!(
+            "[Time used] {:02} h {:02} m {:05.3} s",
+            hours, minutes, seconds
+        )
     } else if minutes > 0 {
         format!("[Time used] {:02} m {:05.3} s", minutes, seconds)
     } else {

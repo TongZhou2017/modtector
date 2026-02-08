@@ -1,6 +1,6 @@
 [package]
 name = "modtector"
-version = "0.9.6"
+version = "0.15.4"
 edition = "2021"
 license = "MIT"
 authors = ["Tong Zhou <TongZhou2017@github.com>"]
@@ -9,8 +9,141 @@ repository = "https://github.com/TongZhou2017/modtector"
 homepage = "https://github.com/TongZhou2017/modtector"
 documentation = "https://modtector.readthedocs.io/"
 readme = "README.md"
-keywords = ["bioinformatics", "rna", "modification", "detection", "rust", "htslib", "pileup", "reactivity"]
-categories = ["science::biology", "development-tools"]
+keywords = ["bioinformatics", "rna", "modification", "detection",  "htslib"]
+categories = ["science::bioinformatics"]
+
+# Exclude development and data files from the published package
+exclude = [
+    # Development directories
+    "benchmark/",
+    "example/",
+    "example-target_*/",
+    "example-target_*",
+    "note/",
+    "runs/",
+    "runs_backup/",
+    "tests/",
+    
+    # Documentation build files
+    "docs/_build/",
+    "docs/doctrees/",
+    "docs/html/",
+    "docs/latex/",
+    
+    # Development files
+    "CHAT.md",
+    "PUBLISH_CHECKLIST.md",
+    "CRATES_IO_CHECK_REPORT.md",
+    "交互式可视化控制面板分析报告.md",
+    "*.orig",
+    "*.bak",
+    
+    # Large data files
+    "*.bam",
+    "*.bai",
+    "*.sam",
+    "*.fa",
+    "*.fasta",
+    "*.fq",
+    "*.fastq",
+    "*.gz",
+    "*.bz2",
+    "*.xz",
+    "*.zip",
+    "*.tar",
+    "*.tar.gz",
+    "*.7z",
+    
+    # Result files
+    "*.csv",
+    "*.png",
+    "*.txt",
+    "*.tsv",
+    "*.bed",
+    "*.gtf",
+    "*.gff3",
+    "*.dp",
+    "*.svg",
+    "*.html",
+    "*.pdf",
+    "*.bt2",
+    
+    # Scripts and configuration files
+    "*.py",
+    "*.R",
+    "*.sh",
+    "*.bash",
+    "*.yaml",
+    "*.yml",
+    "*.json",
+    "Snakefile",
+    "Makefile",
+    "*.env",
+    "*.env.local",
+    
+    # Log files
+    "*.log",
+    "*.out",
+    "*.err",
+    
+    # Temporary files
+    "*.tmp",
+    "*.temp",
+    "*~",
+    
+    # System files
+    ".DS_Store",
+    "Thumbs.db",
+    "desktop.ini",
+    
+    # IDE files
+    ".vscode/",
+    ".idea/",
+    ".cursor/",
+    "*.swp",
+    "*.swo",
+    
+    # Snakemake metadata
+    ".snakemake/",
+    ".snakemake_cache/",
+    ".snakemake_metadata/",
+    
+    # Test files
+    "test_*.sh",
+    "debug_*.sh",
+    "*.test",
+    "*.spec",
+    "coverage/",
+    "test_interactive_*/",
+    "interactive_*/",
+    
+    # Package management files
+    "node_modules/",
+    ".npm/",
+    ".yarn/",
+    
+    # Lock files (ignore all except Cargo.lock)
+    "package-lock.json",
+    "yarn.lock",
+    "Pipfile.lock",
+    
+    # Backup files
+    "*.backup",
+    "*.old",
+    
+    # Local configuration
+    ".local/",
+    "local/",
+    "*.local",
+    
+    # Build and deployment files
+    "build-multi-platform.sh",
+    "build-local-only.sh",
+    "GITHUB_ACTIONS_SETUP.md",
+    "GITHUB_ACTIONS_TROUBLESHOOTING.md",
+    "BUILD.md",
+    "Cross.toml",
+]
 
 [dependencies]
 rust-htslib = "0.47.0"
@@ -23,6 +156,11 @@ clap = { version = "4.5", features = ["derive"] }
 chrono = "0.4"
 quick-xml = "0.36"
 regex = "1.11"
+ndarray = "0.15"
+glob = "0.3"
+# argmin = "0.8"  # Temporarily disabled due to compatibility issues
+# argmin-math = { version = "0.3", features = ["ndarray_all"] }
+# scirs2-optimize = "0.1"  # Alternative: scipy-like optimization library
 
 
 [[bin]]

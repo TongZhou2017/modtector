@@ -21,7 +21,7 @@ copyright = '2025, modtector Team'
 author = 'modtector Team'
 
 # The full version, including alpha/beta/rc tags
-release = '0.9.6'
+release = '0.15.4'
 
 # -- General configuration ---------------------------------------------------
 

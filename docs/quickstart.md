@@ -89,7 +89,39 @@ modtector norm \
 - `-m`: Mutation signal method
 - `-t`: Number of threads
 
-## Step 4: Generate Visualizations
+## Step 4: Duet Ensemble Analysis
+
+Infer dynamic ensembles by combining normalized reactivity with read-level co-variation:
+
+```bash
+modtector duet \
+    -i signal/03_norm/normalized_reactivity.csv \
+    -b signal/00_bam/sample.sort.bam \
+    -f reference/transcript.fa \
+    -o signal/04_duet/duet_windows.csv \
+    --epsilon 0.85 \
+    --min-samples 8 \
+    --window-size 100 \
+    --window-step 50
+```
+
+**Parameters explained:**
+- `-i`: Normalized reactivity CSV
+- `-b`: Sorted BAM file for the same sample
+- `-f`: Reference FASTA sequence
+- `-o`: Window-level CSV with Duet ensemble statistics
+- `--epsilon`: DBSCAN radius in standardized feature space
+- `--min-samples`: Minimum neighbours required to form an ensemble core point
+- `--window-size`: Sliding-window size in nucleotides (default `100`)
+- `--window-step`: Sliding-window step in nucleotides (default `50`)
+
+**Outputs produced:**
+- `<output>.csv`: Window-level summary with global ensemble mappings
+- `<output>_summary.csv`: Per window/per ensemble statistics (including noise)
+- `<output>_global.csv`: Aggregated global ensembles (read totals, stop/mutation counts, overlap statistics)
+- `<output>_global_per_base.csv`: Base-level detail for each global ensemble (read support + reactivity)
+
+## Step 5: Generate Visualizations
 
 Create plots to visualize the results:
 
@@ -97,7 +129,7 @@ Create plots to visualize the results:
 modtector plot \
     -M signal/01_count/mod_sample.csv \
     -U signal/01_count/unmod_sample.csv \
-    -o signal/04_plot/ \
+    -o signal/05_plot/ \
     -r signal/03_norm/normalized_reactivity.csv \
     -t 4
 ```
@@ -109,7 +141,7 @@ modtector plot \
 - `-r`: Reactivity file (optional)
 - `-t`: Number of threads
 
-## Step 5: Evaluate Accuracy
+## Step 6: Evaluate Accuracy
 
 Evaluate the accuracy of your results using known secondary structure:
 
@@ -117,7 +149,7 @@ Evaluate the accuracy of your results using known secondary structure:
 modtector evaluate \
     -r signal/03_norm/normalized_reactivity.csv \
     -s ref/Human_18S.dp \
-    -o signal/05_evaluate/ \
+    -o signal/06_evaluate/ \
     -g Human_18S \
     -S +
 ```
@@ -138,8 +170,9 @@ signal/
 ├── 01_count/          # Raw pileup data
 ├── 02_reactivity/     # Reactivity scores
 ├── 03_norm/           # Normalized reactivity data
-├── 04_plot/           # Visualization plots
-└── 05_evaluate/       # Accuracy evaluation
+├── 04_duet/           # Duet window/global ensemble analysis results
+├── 05_plot/           # Visualization plots
+└── 06_evaluate/       # Accuracy evaluation
 ```
 
 ### Key Output Files
@@ -157,12 +190,18 @@ signal/
    - Filtered and normalized reactivity signals
    - Outlier-corrected reactivity values
 
-4. **Plots** (`04_plot/*.svg`):
+4. **Duet Ensemble Analysis** (`04_duet/*.csv`):
+   - Window-level ensemble assessments with status, occupancy, noise fraction, dual-signal metrics
+   - Per-window/per-ensemble summary CSV (including DBSCAN noise fractions)
+   - Global ensemble summary (`*_global.csv`) aggregating reads/positions across overlapping windows
+   - Per-base global ensemble detail (`*_global_per_base.csv`) with read support and reactivity values
+
+5. **Plots** (`05_plot/*.svg`):
    - Signal distribution plots
    - Reactivity visualization
    - Comparison charts
 
-5. **Evaluation Results** (`05_evaluate/*.txt`):
+6. **Evaluation Results** (`06_evaluate/*.txt`):
    - AUC scores
    - F1-scores
    - Accuracy metrics
@@ -228,7 +267,7 @@ If you encounter issues:
 1. Check the [Troubleshooting Guide](troubleshooting.md)
 2. Review the [Command Reference](commands.md)
 3. Look at the [Examples](examples.md)
-4. Open an issue on the project repository
+4. Open an issue on the [GitHub repository](https://github.com/TongZhou2017/modtector/issues)
 
 ## Tips for Success
 

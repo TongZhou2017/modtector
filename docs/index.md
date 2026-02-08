@@ -47,14 +47,31 @@ modtector provides a complete workflow from raw data to evaluation results:
 3. **Data Normalization**: Signal filtering, outlier handling, background correction
 4. **Comparative Analysis**: Modified vs unmodified sample comparison, identifying modification sites
 5. **Reactivity Calculation**: Calculate signal differences, generate reactivity data
-6. **Visualization**: Generate signal distribution plots and reactivity plots
-7. **Accuracy Assessment**: Performance evaluation based on secondary structure
+6. **Duet Analysis**: Sliding-window inference of dynamic ensembles from normalized reactivity and read-level co-variation
+7. **Visualization**: Generate signal distribution plots and reactivity plots
+8. **Accuracy Assessment**: Performance evaluation based on secondary structure
 
 ## Version Information
 
-- **Current Version**: v0.9.6
-- **Release Date**: 2025-09-27
+- **Current Version**: v0.15.4
+- **Release Date**: 2026-02-08
 - **License**: MIT License
+
+## Project Links
+
+- **GitHub Repository**: [https://github.com/TongZhou2017/modtector](https://github.com/TongZhou2017/modtector)
+- **Crates.io**: [https://crates.io/crates/modtector](https://crates.io/crates/modtector)
+- **Documentation**: [https://modtector.readthedocs.io/](https://modtector.readthedocs.io/)
+
+### Recent Highlights
+
+- **PCR Bias Correction**: Chi-Square distribution-based depth correction (`correct` command)
+- **Base Quality Filtering**: Per-base quality filtering for mutation detection (`--min-base-qual`)
+- **Extended Format Support**: Support for multiple input formats in `convert` command (rf-rctools, shapemapper2, icSHAPE-rt, bedgraph, etc.)
+- **Zarringhalam Remap Improvements**: Uses actual maximum values instead of fixed 1.0 for better high-value region mapping
+- **Distribution-Based K-Factor Prediction**: Advanced k-factor prediction method using statistical distribution analysis
+- **Batch Processing**: Process multiple BAM files sequentially with glob patterns
+- **Single-cell Unified Processing**: Unified processing with cell label extraction for 2-3x performance improvement
 
 ## Example Dataset
 
@@ -71,13 +88,14 @@ To help you quickly evaluate modtector, we provide a minimal example dataset ava
 
 2. Run the example script:
    ```bash
-   bash test_modtector_v0.9.6.sh
+   bash test_modtector_v0.10.0.sh
    ```
 
 This will execute a complete workflow on the example data, including:
 - Pileup processing of BAM files
 - Reactivity calculation with multiple methods
 - Data normalization
+- Duet sliding-window ensemble decomposition using normalized reactivity and BAM co-variation
 - Visualization generation
 - Accuracy evaluation
 
@@ -85,7 +103,7 @@ The results will be organized in the `signal_v0.5.6/` directory with subdirector
 
 ## Support
 
-For questions, issues, or contributions, please refer to the [Contributing Guide](contributing.md) or open an issue on the project repository.
+For questions, issues, or contributions, please refer to the [Contributing Guide](contributing.md) or open an issue on the [GitHub repository](https://github.com/TongZhou2017/modtector).
 
 ## Citation
 

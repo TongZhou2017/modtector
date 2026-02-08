@@ -12,17 +12,51 @@ Cargo.lock
 # Files not needed for crates.io publishing
 CHAT.md
 PUBLISH_CHECKLIST.md
+CRATES_IO_CHECK_REPORT.md
+GITHUB_REPO_CHECK_REPORT.md
+GITHUB_UPDATE_GUIDE.md
+CREATE_RELEASE_CHECKLIST.md
+DIFFERENCE_ANALYSIS_SUMMARY.md
+GITHUB_RELEASE_TEXT.md
+INTERACTIVE_VISUALIZATION_ENHANCED.md
+INTERACTIVE_VISUALIZATION_UPDATE.md
+QUICKSTART_RELEASE.md
+RELEASE_README.md
+RELEASE_NOTES_v0.9.6.md
+CONDA_PUBLISH_GUIDE.md
+corrected_enhancement_analysis.md
+mild_enhancement_analysis.md
+strict_enhancement_analysis.md
+test_interactive_visualization.md
+*交互*.md
+*分析报告.md
 
 # Result files and output directories
 *.csv
-#*.png
-#*.txt
 *.tsv
 *.bed
 *.gtf
 *.gff3
 *.dp
-*.svg
+
+# Exclude result images/files in root directory
+/*.png
+/*.pdf
+/*.html
+/*.txt
+/*.svg
+
+# But keep documentation images and files
+!docs/images/
+!docs/images/**
+!docs/_static/
+!docs/_static/**
+!docs/**/*.png
+!docs/**/*.jpg
+!docs/**/*.jpeg
+!docs/**/*.gif
+!docs/**/*.svg
+!docs/**/*.txt
 
 # Temporary files
 *.tmp
@@ -45,6 +79,7 @@ desktop.ini
 # IDE and editor files
 .vscode/
 .idea/
+.cursor/
 *.swp
 *.swo
 *~
@@ -74,7 +109,7 @@ desktop.ini
 *.7z
 
 # Scripts and configuration files
-#*.py
+*.py
 *.R
 *.sh
 *.bash
@@ -137,3 +172,15 @@ Pipfile.lock
 local/
 *.localruns/
 runs_backup/
+
+# Example data directories
+example-target_*/
+example-target_*
+
+# Test and interactive output directories
+test_interactive_*/
+interactive_*/
+evaluate_*_output/
+
+# Conda recipe (if not needed in repo)
+# conda-recipe/

@@ -1,8 +1,8 @@
+use rayon::prelude::*;
 use std::collections::HashMap;
 use std::fs::File;
 use std::io::{BufRead, BufReader, Write};
 use std::time::Instant;
-use rayon::prelude::*;
 
 #[derive(Debug, Clone)]
 struct TranscriptRecord {
@@ -38,10 +38,15 @@ impl GenomeSequence {
             if line.starts_with('>') {
                 // Save previous sequence
                 if !current_seq_name.is_empty() {
-                    self.sequences.insert(current_seq_name.clone(), current_sequence.clone());
+                    self.sequences
+                        .insert(current_seq_name.clone(), current_sequence.clone());
                 }
                 // Start new sequence
-                current_seq_name = line[1..].split_whitespace().next().unwrap_or("").to_string();
+                current_seq_name = line[1..]
+                    .split_whitespace()
+                    .next()
+                    .unwrap_or("")
+                    .to_string();
                 current_sequence.clear();
             } else {
                 current_sequence.push_str(&line);
@@ -116,7 +121,9 @@ fn parse_gtf_line(line: &str) -> Option<TranscriptRecord> {
     })
 }
 
-fn load_gene_mapping(mapping_path: &str) -> Result<HashMap<String, String>, Box<dyn std::error::Error>> {
+fn load_gene_mapping(
+    mapping_path: &str,
+) -> Result<HashMap<String, String>, Box<dyn std::error::Error>> {
     let mut mapping = HashMap::new();
     let file = File::open(mapping_path)?;
     let reader = BufReader::new(file);
@@ -285,7 +292,11 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         .map(|chunk| chunk.to_vec())
         .collect();
 
-    println!("Split into {} batches of ~{} genes each", gene_batches.len(), batch_size);
+    println!(
+        "Split into {} batches of ~{} genes each",
+        gene_batches.len(),
+        batch_size
+    );
 
     // Parallel processing
     println!("Starting parallel processing...");
@@ -312,7 +323,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     println!("Writing output files...");
     let fasta_output = format!("{}.fa", output_prefix);
     let mut fasta_file = File::create(&fasta_output)?;
-    
+
     for (transcript_id, sequence) in &all_sequences {
         writeln!(fasta_file, ">{}", transcript_id)?;
         for chunk in sequence.as_bytes().chunks(80) {
@@ -350,4 +361,4 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     println!("GTF file: {}", gtf_output);
 
     Ok(())
-} 
+}

@@ -24,7 +24,7 @@ Thank you for your interest in contributing to modtector! This guide will help y
 
 ### Fork and Clone
 
-1. **Fork the repository** on GitHub
+1. **Fork the repository** on [GitHub](https://github.com/TongZhou2017/modtector)
 2. **Clone your fork**:
    ```bash
    git clone https://github.com/your-username/modtector.git
@@ -33,7 +33,7 @@ Thank you for your interest in contributing to modtector! This guide will help y
 
 3. **Add upstream remote**:
    ```bash
-   git remote add upstream https://github.com/original-org/modtector.git
+   git remote add upstream https://github.com/TongZhou2017/modtector.git
    ```
 
 ### Development Setup

@@ -49,7 +49,7 @@ cargo --version
 
 1. **Clone the repository**:
 ```bash
-git clone https://github.com/your-org/modtector.git
+git clone https://github.com/TongZhou2017/modtector.git
 cd modtector
 ```
 
@@ -68,11 +68,20 @@ cargo build --release
 ./target/release/modtector --help
 ```
 
-### Method 2: Install via Cargo (if published)
+### Method 2: Install via Cargo
+
+Install directly from [crates.io](https://crates.io/crates/modtector):
 
 ```bash
 cargo install modtector
 ```
+
+Alternatively, you can install a specific version:
+```bash
+cargo install modtector --version 0.15.4
+```
+
+**Note**: The latest version is available on [crates.io](https://crates.io/crates/modtector).
 
 ## Dependencies
 
@@ -160,8 +169,8 @@ modtector count --help
 If you encounter issues during installation:
 
 1. Check the [Troubleshooting Guide](troubleshooting.md)
-2. Search existing issues on the project repository
-3. Create a new issue with detailed error information
+2. Search existing issues on the [GitHub repository](https://github.com/TongZhou2017/modtector)
+3. Create a new issue with detailed error information on [GitHub](https://github.com/TongZhou2017/modtector/issues)
 
 ## Next Steps
 

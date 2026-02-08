@@ -103,6 +103,75 @@ Before running modtector, verify:
    samtools view sample.bam | head -100
    ```
 
+4. **BAM Index Files** (Required for count command):
+   ```bash
+   # Check if index exists
+   ls -lh sample.bam.bai
+   
+   # Create index if missing
+   samtools index -b sample.bam -o sample.bam.bai -@ 8
+   ```
+
+### Batch Processing and Single-cell Mode
+
+#### Batch Mode (`--batch`)
+
+Batch mode allows you to process multiple BAM files sequentially, each file independently.
+
+**Use Cases:**
+- Processing multiple samples that need separate analysis
+- Bulk RNA-seq data with multiple replicates
+- When each file should be treated as an independent sample
+
+**Example:**
+```bash
+modtector count --batch \
+  -b "/path/to/data/*sort.bam" \
+  -f reference.fa \
+  -o output_dir/ \
+  -t 8 \
+  -w 10000
+```
+
+**Requirements:**
+- BAM files must be sorted and indexed (`.bai` files must exist)
+- Glob pattern must match at least one file
+- Output path must be a directory
+
+#### Single-cell Unified Mode (`--single-cell`)
+
+Single-cell unified mode is optimized for single-cell RNA-seq data, providing 2-3x performance improvement through unified processing.
+
+**Key Features:**
+- Unified data distribution scanning (once instead of per-file)
+- Automatic cell label extraction from filenames
+- Cross-file parallel processing
+- Reduced I/O overhead
+
+**Cell Label Extraction:**
+- Supports RHX pattern: `*RHX672.sort.bam` → `RHX672`
+- Falls back to last underscore-separated part: `sample_cell123.bam` → `cell123`
+- Final fallback: base filename without extension
+
+**Example:**
+```bash
+modtector count --single-cell \
+  -b "/path/to/single_cell/*sort.bam" \
+  -f reference.fa \
+  -o output_dir/ \
+  -t 8 \
+  -w 10000 \
+  -l batch.log
+```
+
+**Output:**
+- Each cell generates a separate CSV file: `RHX672.csv`, `RHX673.csv`, etc.
+- Log files are also generated per cell
+
+**Performance Comparison:**
+- Batch mode: ~N × single_file_time (sequential processing)
+- Single-cell unified mode: ~(N × single_file_time) / 2-3 (unified processing)
+
 ## Signal Types
 
 ### Stop Signals
@@ -370,6 +439,21 @@ Visualization helps interpret results and identify patterns in the data.
   - Color-coded reactivity scores
 - **Content**: Side-by-side comparisons
 
+#### 7. Interactive HTML Visualizations
+- **Purpose**: Interactive web-based visualization of reactivity data on RNA structure
+- **Format**: HTML (with embedded SVG and JavaScript)
+- **Content**: Interactive RNA structure with reactivity data overlay
+- **Features**:
+  - **Hover Tooltips**: Display position, base type, and reactivity values on hover
+  - **Zoom and Pan**: Mouse wheel zoom and click-drag panning
+  - **Filtering Controls**:
+    - Reactivity threshold filtering (min/max sliders)
+    - Base type filtering (A, T, C, G, or all)
+  - **Highlighting**: Click circles to highlight specific positions
+  - **Export**: Export the current view as SVG
+  - **Reset View**: Reset zoom and filters to default
+- **Usage**: Add `--interactive` flag to the plot command to generate HTML instead of static SVG
+
 ### SVG Plotting
 
 #### Overview
@@ -397,6 +481,27 @@ modtector plot \
     --svg-signal all \
     --svg-strand +
 ```
+
+#### Interactive HTML Visualization
+Generate interactive HTML visualizations with zoom, pan, filtering, and tooltip features:
+
+```bash
+modtector plot \
+    -o interactive_output/ \
+    --svg-template rna_structure.svg \
+    --reactivity reactivity_data.csv \
+    --interactive \
+    --svg-signal stop \
+    --svg-bases ACGT
+```
+
+The interactive HTML file can be opened in any modern web browser and provides:
+- **Mouse wheel zoom**: Scroll to zoom in/out
+- **Click and drag**: Pan around the structure
+- **Hover tooltips**: See position, base, and reactivity values
+- **Filtering**: Adjust reactivity thresholds and filter by base type
+- **Highlighting**: Click circles to highlight specific positions
+- **Export**: Download the current view as SVG
 
 #### Single Signal SVG Plotting
 For single signal data, specify the signal type:
