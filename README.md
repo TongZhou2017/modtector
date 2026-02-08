@@ -11,7 +11,6 @@ ModTector is a high-performance RNA modification detection tool developed in Rus
 - **Data Distribution Optimization**: Smart data distribution scanning for efficient processing
 - **Data Normalization**: Signal validity filtering and outlier handling
 - **Reactivity Calculation**: Calculate signal differences between modified and unmodified samples with multi-threading support
-- **Duet Ensemble Decomposition**: Sliding-window inference of dynamic RNA ensembles with global aggregation across overlaps using read-level stop/mutation co-variation
 - **Accuracy Assessment**: AUC, F1-score and other metrics evaluation based on secondary structure with auto-shift correction
 - **Rich Visualization**: Signal distribution plots, reactivity plots, ROC/PR curves, and RNA structure SVG plots
 - **Multi-threading**: Parallel processing and plotting for improved efficiency
@@ -31,10 +30,9 @@ ModTector provides a complete workflow from raw BAM data to final evaluation res
 2. **Statistical Analysis**: Pileup traversal, counting stop and mutation signals
 3. **Reactivity Calculation**: Calculate signal differences between modified and unmodified samples, generate reactivity data
 4. **Data Normalization**: Normalize reactivity signals, signal filtering, outlier handling, background correction
-5. **Duet Ensemble Decomposition**: Infer alternative RNA conformations from normalized reactivity with read-level evidence
-6. **Comparative Analysis**: Compare modified vs unmodified samples, identify differential modification sites
-7. **Visualization**: Generate signal distribution plots, reactivity plots, and RNA structure SVG plots
-8. **Accuracy Assessment**: Performance evaluation based on secondary structure
+5. **Comparative Analysis**: Compare modified vs unmodified samples, identify differential modification sites
+6. **Visualization**: Generate signal distribution plots, reactivity plots, and RNA structure SVG plots
+7. **Accuracy Assessment**: Performance evaluation based on secondary structure
 
 ## 🔧 Installation
 
@@ -142,18 +140,6 @@ modtector plot -o svg_output/ --svg-template rna_structure.svg --reactivity norm
 
 # Evaluate accuracy
 modtector evaluate -r normalized_reactivity.csv -s structure.dp -o results/ -g gene_id
-
-# Duet ensemble decomposition (Stop + Mutation co-variation, 100-nt windows)
-modtector duet \
-  -i normalized_reactivity.csv \
-  -b sample.sort.bam \
-  -f reference.fa \
-  -o duet_windows.csv \
-  --epsilon 0.8 \
-  --min-samples 8 \
-  --window-size 100 \
-  --window-step 50 \
-  -t 16
 ```
 
 ### 1. Count - Data Processing
@@ -238,34 +224,7 @@ modtector count --single-cell \
 ChrID,Strand,Position,RefBase,StopCount,MutationCount,Depth,InsertionCount,DeletionCount,BaseA,BaseC,BaseG,BaseT
 ```
 
-### 2. Norm - Data Normalization
-
-Normalize and filter signals to remove noise and outliers.
-
-```bash
-modtector norm [OPTIONS] --input <INPUT> --output <OUTPUT>
-```
-
-**Parameters:**
-- `-i, --input`: Input CSV file
-- `-o, --output`: Output normalized CSV file
-- `-m, --method`: Normalization method (winsor90, percentile28, boxplot)
-- `--bases`: Target bases for analysis (e.g., AC for A and C bases)
-- `--coverage-threshold`: Coverage threshold (default: 0.2)
-- `--depth-threshold`: Depth threshold (default: 50)
-
-**Example:**
-```bash
-modtector norm \
-  -i result/mod.csv \
-  -o result/mod_norm.csv \
-  -m winsor90 \
-  --bases AC \
-  --coverage-threshold 0.2 \
-  --depth-threshold 50
-```
-
-### 3. Reactivity - Reactivity Calculation
+### 2. Reactivity - Reactivity Calculation
 
 Calculate reactivity scores by comparing modified and unmodified samples.
 
@@ -275,21 +234,25 @@ modtector reactivity [OPTIONS] --mod-csv <MOD_CSV> --unmod-csv <UNMOD_CSV> --out
 
 **Parameters:**
 - `-M, --mod-csv`: Modified sample CSV
-- `-U, --unmod-csv`: Unmodified sample CSV
+- `-U, --unmod-csv`: Unmodified sample CSV (optional, omit for mod-only mode)
 - `-O, --output`: Output reactivity file
-- `-s, --stop-method`: Stop signal method (current, ding, rouskin)
-- `-m, --mutation-method`: Mutation signal method (current, siegfried, zubradt)
+- `-s, --stop-method`: Stop signal method (kfactor, ding, rouskin; default: kfactor)
+- `-m, --mutation-method`: Mutation signal method (kfactor, siegfried, zubradt; default: kfactor)
 - `-t, --threads`: Number of parallel threads (default: 8)
 - `--pseudocount`: Pseudocount parameter for Ding method (default: 1.0)
 - `--maxscore`: Maximum score limit for Ding method (default: 10.0)
+- `--snp-cutoff`: SNP threshold for filtering positions (default: 0.25)
+- `--k-prediction-method`: K-factor prediction method (background, distribution, recursive; default: background)
+- `--structure-file`: Reference secondary structure file (required for recursive method)
+- `--k-background-gene-id`: Gene ID for k-factor background region selection
 
 **Stop Signal Methods:**
-- **current**: k-factor correction method (default)
+- **kfactor**: k-factor correction method (default)
 - **ding**: Ding et al., 2014 logarithmic processing method
 - **rouskin**: Uses only modified sample stop signal
 
 **Mutation Signal Methods:**
-- **current**: k-factor correction method (default)
+- **kfactor**: k-factor correction method (default)
 - **siegfried**: Siegfried method for mutation signal processing
 - **zubradt**: Uses only modified sample mutation signal
 
@@ -316,6 +279,34 @@ modtector reactivity \
 **Output Format (CSV):**
 ```
 ChrID,Strand,Position,RefBase,Reactivity
+```
+
+### 3. Norm - Data Normalization
+
+Normalize and filter signals to remove noise and outliers.
+
+```bash
+modtector norm [OPTIONS] --input <INPUT> --output <OUTPUT>
+```
+
+**Parameters:**
+- `-i, --input`: Input reactivity CSV file (output from `modtector reactivity`)
+- `-o, --output`: Output normalized CSV file
+- `-m, --method`: Normalization method (winsor90, percentile28, boxplot)
+- `--bases`: Target bases for analysis (e.g., AC for A and C bases)
+- `--coverage-threshold`: Coverage threshold (default: 0.2)
+- `--depth-threshold`: Depth threshold (default: 50)
+- `--linear`: Apply Zarringhalam piecewise linear mapping
+
+**Example:**
+```bash
+modtector norm \
+  -i result/reactivity.csv \
+  -o result/reactivity_norm.csv \
+  -m winsor90 \
+  --bases AC \
+  --coverage-threshold 0.2 \
+  --depth-threshold 50
 ```
 
 ### 4. Compare - Sample Comparison
@@ -444,82 +435,6 @@ modtector evaluate \
 - **Recall**: True positive rate (0-1, higher is better)
 - **Accuracy**: Proportion of correct classifications (0-1, higher is better)
 
-### 7. Duet - Dynamic Ensemble Decomposition
-
-Duet performs a sliding-window analysis (default 100-nt windows with 50-nt step) that jointly examines normalized stop/mutation reactivities and read-level co-variation to determine whether multiple conformations coexist within each genomic segment. Clustering is carried out per window via DBSCAN on read-level stop/mutation co-occurrence features, eliminating the need to predefine the number of ensembles.
-
-```bash
-modtector duet [OPTIONS] --input <INPUT> --bam <BAM> --fasta <FASTA> --output <OUTPUT>
-```
-
-**Key Parameters:**
-- `-i, --input`: Normalized reactivity CSV file (output from `modtector norm`)
-- `-b, --bam`: Sorted BAM alignment for the same sample
-- `-f, --fasta`: Reference FASTA used for alignment
-- `-o, --output`: Window-level CSV summarising ensemble detection
-- `--epsilon`: DBSCAN radius in standardized feature space (default: 0.75)
-- `--min-samples`: Minimum neighbours for a DBSCAN core read (default: 5)
-- `--window-size`: Sliding-window size in nucleotides (default: 100)
-- `--window-step`: Sliding-window step in nucleotides (default: 50)
-- `-t, --threads`: Number of threads for parallel processing (default: system CPU count)
-- `--summary-output`: Optional per-window/per-ensemble CSV path (default `<output>_summary.csv`)
-- `-l, --log`: Log file path (optional)
-
-**Example:**
-```bash
-# Infer window-level ensembles (100-nt windows, 50-nt step, 16 threads)
-modtector duet \
-  -i signal/03_norm/iso-1_rep-1_norm.csv \
-  -b signal/00_bam/iso-1_rep-1.sort.bam \
-  -f reference/PDL1.fa \
-  -o signal/04_duet/iso-1_rep-1_windows.csv \
-  --epsilon 0.85 \
-  --min-samples 8 \
-  --window-size 100 \
-  --window-step 50 \
-  -t 16
-```
-
-**Progress Reporting:**
-During execution, duet provides detailed statistics:
-- Number and percentage of reads with dual signals (both stop and mutation)
-- Number and percentage of positions assigned high confidence (reactivity >= 0.7)
-- Average position confidence and total positions analyzed
-
-**Window CSV Columns:**
-- `ChrID,Strand,WindowStart,WindowEnd`: Genomic window coordinates
-- `Status`: `OK`, `InsufficientReads`, or `LowDensity`
-- `ReadCount`: Number of reads contributing stop/mutation signals inside the window
-- `EnsembleCount`: Number of DBSCAN ensembles (noise excluded)
-- `PrimaryEnsembleID / PrimaryOccupancy`: Highest-occupancy ensemble (if any)
-- `NoiseFraction`: Fraction of reads classified as DBSCAN noise
-- `DualSignalFraction`: Fraction of reads in the window carrying both stop and mutation evidence
-- `MeanStopReactivity / MeanMutationReactivity`: Average normalized reactivity values across positions in the window
-- `ClusterSummary`: Concise per-ensemble occupancy/ confidence/ signal statistics
-- `GlobalEnsembles`: Mapping from window-local cluster IDs to global ensemble IDs (e.g., `c1->E1|E2`)
-
-**Summary CSV Columns:**
-- Window coordinates and status (mirroring the main CSV)
-- `EnsembleID / GlobalEnsembleID / IsNoise / Members / Occupancy`
-- `ClusterConfidence`: Confidence score for the window-level cluster (0-1)
-- `MeanStopCount / MeanMutationCount / DualSignalFraction`
-- Window-level mean reactivities for convenience
-
-**Global Ensemble CSV (`<output>_global.csv`) Columns:**
-- `ChrID,Strand,GlobalEnsembleID`: Transcript and ensemble identifier
-- `WindowCount / ClusterCount`: Number of contributing windows and window-clusters
-- `ReadCount`: Total reads assigned to the global ensemble
-- `TotalStopReads / TotalMutationReads`: Aggregated stop/mutation read counts
-- `DualSignalReads`: Reads exhibiting both stop and mutation signals inside the ensemble
-- `UniquePositions`: Number of distinct positions linked to the ensemble
-- `Confidence`: Global ensemble confidence score derived from supporting clusters
-
-**Global Per-base CSV (`<output>_global_per_base.csv`) Columns:**
-- `ChrID,Strand,Position,GlobalEnsembleID`: Genomic coordinate annotated with global ensemble ID
-- `StopReads / MutationReads`: Read support contributed by the ensemble at the position
-- `StopReactivity / MutationReactivity`: Normalized reactivity values inherited from the window input
-- `PositionConfidence`: Confidence score for the ensemble assignment at this base
-
 ## 📊 Representative Visualization Results
 
 The following shows typical visualization results generated by ModTector:
@@ -564,7 +479,7 @@ To help you get started quickly, we provide a minimal example dataset that can b
    bash test_modtector_v0.10.0.sh
    ```
 
-This script will run a complete ModTector workflow on a small example dataset, demonstrating all major functionality including pileup processing, reactivity calculation, normalization, Duet sliding-window ensemble analysis, visualization, and evaluation.
+This script will run a complete ModTector workflow on a small example dataset, demonstrating all major functionality including pileup processing, reactivity calculation, normalization, visualization, and evaluation.
 
 ### Expected Results
 
@@ -572,9 +487,8 @@ After running the example script, you will see output files in the `signal_v0.5.
 - `01_count/` - Pileup count results
 - `02_reactivity/` - Reactivity calculation results
 - `03_norm/` - Normalized reactivity data
-- `04_duet/` - Duet sliding-window ensemble analysis results (window/summary CSVs plus `<name>_global.csv` and `<name>_global_per_base.csv`)
-- `05_plot/` - Visualization plots
-- `06_evaluate/` - Accuracy evaluation results
+- `04_plot/` - Visualization plots
+- `05_evaluate/` - Accuracy evaluation results
 - `logs/` - Processing logs
 
 ## 📈 Performance Optimization
